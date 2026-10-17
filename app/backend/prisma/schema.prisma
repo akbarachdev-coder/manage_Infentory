@@ -1,0 +1,128 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model User {
+  id            String           @id @default(uuid())
+  email         String           @unique
+  name          String
+  passwordHash  String           @map("password_hash")
+  avatarUrl     String?          @map("avatar_url")
+  createdAt     DateTime         @default(now()) @map("created_at")
+  
+  projects      ProjectMember[]
+  assignedTasks TaskAssignee[]
+  comments      Comment[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Project {
+  id          String           @id @default(uuid())
+  title       String
+  description String?
+  ownerId     String           @map("owner_id")
+  createdAt   DateTime         @default(now()) @map("created_at")
+
+  members     ProjectMember[]
+  columns     Column[]
+
+  @@map("projects")
+}
+
+model ProjectMember {
+  id        String   @id @default(uuid())
+  projectId String   @map("project_id")
+  userId    String   @map("user_id")
+  role      Role     @default(MEMBER)
+
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@map("project_members")
+}
+
+model Column {
+  id        String   @id @default(uuid())
+  projectId String   @map("project_id")
+  title     String
+  position  Int      
+
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks     Task[]
+
+  @@map("columns")
+}
+
+model Task {
+  id          String         @id @default(uuid())
+  columnId    String         @map("column_id")
+  title       String
+  description String?
+  priority    Priority       @default(MEDIUM)
+  dueDate     DateTime?      @map("due_date")
+  position    Int
+  createdAt   DateTime       @default(now()) @map("created_at")
+
+  column      Column         @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  assignees   TaskAssignee[]
+  comments    Comment[]
+
+  @@map("tasks")
+}
+
+model TaskAssignee {
+  taskId String @map("task_id")
+  userId String @map("user_id")
+
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, userId])
+  @@map("task_assignees")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  taskId    String   @map("task_id")
+  userId    String   @map("user_id")
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  message   String
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
