@@ -9,7 +9,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CurrentUser } from '../auth/current-user.decorator.js';
-import { JwtAuthGuard, JwtPayload } from '../auth/jwt-auth.guard.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import type { JwtPayload } from '../auth/jwt-auth.guard.js';
 import { ColumnsService } from './columns.service.js';
 import { CreateColumnDto } from './dto/create-column.dto.js';
 import { MovePositionDto } from './dto/move-position.dto.js';

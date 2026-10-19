@@ -10,7 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CurrentUser } from '../auth/current-user.decorator.js';
-import { JwtAuthGuard, JwtPayload } from '../auth/jwt-auth.guard.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import type { JwtPayload } from '../auth/jwt-auth.guard.js';
 import { AddAssigneeDto } from './dto/add-assignee.dto.js';
 import { CreateTaskDto } from './dto/create-task.dto.js';
 import { MoveTaskDto } from './dto/move-task.dto.js';

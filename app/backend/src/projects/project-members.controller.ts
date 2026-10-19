@@ -9,7 +9,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CurrentUser } from '../auth/current-user.decorator.js';
-import { JwtAuthGuard, JwtPayload } from '../auth/jwt-auth.guard.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import type { JwtPayload } from '../auth/jwt-auth.guard.js';
 import { AddMemberDto } from './dto/add-member.dto.js';
 import { UpdateMemberDto } from './dto/update-member.dto.js';
 import { ProjectMembersService } from './project-members.service.js';
